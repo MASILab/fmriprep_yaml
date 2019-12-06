@@ -1,12 +1,12 @@
 ---
 moreauto: true
-procversion: 1.5.0
+procversion: 1.4.1
 procname: fmriprep
-proctype: fmriprep_v1.5.0
+proctype: fmriprep_v1.4.1
 
 inputs:
   default:
-    container_path: fmriprep-1.5.0.simg
+    container_path: fmriprep-1.4.1.simg
  
   xnat:
     scans:
@@ -19,7 +19,7 @@ inputs:
             fcount: 1
             ftype: FILE
             fdest: fmri.nii.gz
-            ddest: sub-01/func/sub-01_task-rest_run-01_bold.nii.gz
+            ddest: BIDS_data/sub-01/func/sub-01_task-rest_run-01_bold.nii.gz
             varname: fmri_niigz
       - name: scan_t1
         types: T1W/3D/TFE
@@ -30,7 +30,7 @@ inputs:
             fcount: 1
             ftype: FILE
             fdest: t1.nii.gz
-            ddest: sub-01/anat/sub-01_T1w.nii.gz
+            ddest: BIDS_data/sub-01/anat/sub-01_T1w.nii.gz
             varname: t1_niigz
 
 outputs:
@@ -42,16 +42,19 @@ command: >-
   singularity
   run
   --cleanenv
-  --bind /data/mcr/centos7/FS6/license.txt:/usr/local/freesurfer/license.txt
-  --home $INDIR
-  --bind $INDIR:/INPUTS
-  --bind $OUTDIR:/OUTPUTS
   {container_path}
-  /INPUTS/
+  --participant_label 01
+  --output-spaces MNI152NLin2009cAsym MNI152NLin6Asym
+  --fd-spike-threshold 0.9
+  --fs-license-file /data/mcr/centos7/FS6/license.txt
+  --fs-no-reconall
+  -w work/01
+  --resource-monitor
+  --use-syn-sdc
+  /INPUTS/BIDS-data
   /OUTPUTS/ 
   participant
-  --fs-license-file /usr/local/freesurfer/
- 
+
 attrs:
   xsitype: proc:genProcData
   walltime: '24:00:00'
